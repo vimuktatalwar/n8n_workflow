@@ -1,0 +1,172 @@
+{
+  "name": "Upload to Vector Store Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        448
+      ],
+      "id": "0e03e078-4923-48ac-9aca-b207600ddad0"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rwfNm21-iXUHTA6teZF96KnhOZ9i1JtwFyCRGsgdlR8",
+          "mode": "list",
+          "cachedResultName": "Accounting",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rwfNm21-iXUHTA6teZF96KnhOZ9i1JtwFyCRGsgdlR8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rwfNm21-iXUHTA6teZF96KnhOZ9i1JtwFyCRGsgdlR8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2400,
+        448
+      ],
+      "id": "d7be0fbb-bac0-4717-8b88-8cb4d2b653a6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "70GX4u5ahBYjZTW2",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "dense-index",
+          "mode": "list",
+          "cachedResultName": "dense-index"
+        },
+        "embeddingBatchSize": 1536,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        2624,
+        448
+      ],
+      "id": "bf2b4587-65d6-4c06-b8f6-1412d8f4df12",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "rQCn7d0C2rt96wvJ",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-ada-002",
+        "options": {
+          "batchSize": 1536
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2624,
+        640
+      ],
+      "id": "2bf2216b-1d0f-4a05-a5e7-460f7a1cecaa",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "aO0eWnVA5pBQeU3W",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        2800,
+        624
+      ],
+      "id": "8079be71-a89e-4a7a-9eb7-2b0231e053e7",
+      "name": "Default Data Loader"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c43cb634-b972-4254-a8d0-2c9dc97dbdbd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "16a8eef006365724a48c1b052004e982f993bacb7d4c00afba489b00fc8a1600"
+  },
+  "nodeGroups": [],
+  "id": "vf3l9ES3ikwuc5fZ",
+  "tags": []
+}
